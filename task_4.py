@@ -1,0 +1,38 @@
+import types
+
+
+def flat(data):
+    if isinstance(data, list):
+        for item in data:
+            if isinstance(item, list):
+                yield from flat(item)
+            else:
+                yield item
+    else:
+        yield data
+
+
+def flat_generator(list_of_list):
+    yield from flat(list_of_list)
+
+
+def test_4():
+    list_of_lists_2 = [
+        [['a'], ['b', 'c']],
+        ['d', 'e', [['f'], 'h'], False],
+        [1, 2, None, [[[[['!']]]]], []]
+    ]
+
+    for flat_iterator_item, check_item in zip(
+            flat_generator(list_of_lists_2),
+            ['a', 'b', 'c', 'd', 'e', 'f', 'h', False, 1, 2, None, '!']
+    ):
+        assert flat_iterator_item == check_item
+
+    assert list(flat_generator(list_of_lists_2)) == ['a', 'b', 'c', 'd', 'e', 'f', 'h', False, 1, 2, None, '!']
+
+    assert isinstance(flat_generator(list_of_lists_2), types.GeneratorType)
+
+
+if __name__ == '__main__':
+    test_4()
